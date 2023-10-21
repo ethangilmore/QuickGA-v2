@@ -7,7 +7,7 @@ class Trait():
     def sample(self):
         raise NotImplementedError(f"Trait {type(self).__name__} must implement the \"sample\" method")
 
-    def mutate(self, value):
+    def mutate(self, value, mutation_rate):
         raise NotImplementedError(f"Trait {type(self).__name__} must implement the \"mutate\" method")
     
     def crossover(self, a, b):

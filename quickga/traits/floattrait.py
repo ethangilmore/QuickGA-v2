@@ -11,8 +11,8 @@ class FloatTrait(Trait):
     def sample(self):
         return random.uniform(self.min, self.max)
     
-    def mutate(self, value):
-        return self.sample()
+    def mutate(self, value, mutation_rate):
+        return value if random.random() > mutation_rate else self.sample()
     
     def crossover(self, a, b):
         return random.choice([a, b])
