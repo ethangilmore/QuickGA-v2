@@ -1,11 +1,7 @@
-from .organism import Organism
-
 class Population:
     
     def __init__(self, organisms):
         self.organisms = organisms
-        self.max_fitness = 0
-        self.most_fit = None
 
     @property
     def most_fit(self):
@@ -18,7 +14,3 @@ class Population:
                 most_fit = organism
 
         return most_fit
-    
-    @property
-    def max_fitness(self):
-        return self.most_fit.fitness

@@ -1,7 +1,7 @@
 class Selector:
 
-    def __init__(self, population):
-        pass
+    def get_survivors(self, population):
+        raise NotImplementedError(f"Selector {type(self).__name__} must implement the \"get_survivors\" method")
 
-    def select_parent(self):
+    def select_parent(self, population):
         raise NotImplementedError(f"Selector {type(self).__name__} must implement the \"select_parent\" method")

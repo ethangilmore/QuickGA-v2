@@ -1,6 +1,9 @@
+import random
 from functools import cached_property
 
 from .traits import Trait
+from .population import Population
+from .selectors import RouletteSelector
 
 class Organism:
 
@@ -43,5 +46,16 @@ class Organism:
             mutated_value = trait.mutate(original_value, mutation_rate)
             self.__dict__[name] == mutated_value
     
-    def evolve(self, population_size, num_generations, crossover_rate=0.8, mutation_rate=0.05):
-        pass
+    def evolve(self, population_size, num_generations, crossover_rate=0.8, mutation_rate=0.05, selector=RouletteSelector()):
+        population = Population([type(self)(*self._init_args, **self._init_kwargs) for _ in range(population_size)])
+
+        for generation in range(num_generations):
+            new_organisms = selector.get_survivors(population)
+            while len(new_organisms) < population_size:
+                parent = selector.select_parent(population)
+                child = parent + selector.select_parent(population) if random.random() < crossover_rate else parent
+                child.mutate(mutation_rate)
+                new_organisms.append(child)
+            population = Population(new_organisms)
+        
+        return population.most_fit
