@@ -45,7 +45,7 @@ class Organism:
         for name, trait in self._traits.items():
             original_value = self.__dict__.get(name)
             mutated_value = trait.mutate(original_value, mutation_rate)
-            self.__dict__[name] == mutated_value
+            self.__dict__[name] = mutated_value
     
     def evolve(self, population_size, num_generations, crossover_rate=0.8, mutation_rate=0.05, selector=RouletteSelector(), callbacks=[]):
         history = HistoryCallback()
