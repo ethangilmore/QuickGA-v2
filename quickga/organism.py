@@ -7,6 +7,12 @@ from .selectors import RouletteSelector
 from .callbacks import HistoryCallback
 
 class Organism:
+    """An object with traits that can be evolved based on a given fitness function.
+
+    Attributes:
+        fitness (float):
+            The fitness of the organism (defined by implementing fitness_function()). Higher fitness means the organism performs better.
+    """
 
     def __init__(self, *args, **kwargs):
         """Initializes an organism.
@@ -90,7 +96,7 @@ class Organism:
     def fitness_function(self):
         """The fitness function of the organism
 
-        The fitness function of the organism, implemented by the user. A higher fitness means the organism is better.
+        The fitness function of the organism, implemented by the user. A higher fitness means the organism performs better.
 
         Returns:
             float:
