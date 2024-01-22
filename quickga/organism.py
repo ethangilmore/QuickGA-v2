@@ -3,7 +3,7 @@ from functools import cached_property
 
 from .traits import Trait
 from .population import Population
-from .selectors import RouletteSelector
+from .selectionstrategies import RouletteSelector
 from .callbacks import HistoryCallback
 
 class Organism:
@@ -118,7 +118,7 @@ class Organism:
             mutated_value = trait.mutate(original_value, mutation_rate)
             self.__dict__[name] = mutated_value
     
-    def evolve(self, population_size, num_generations, crossover_rate=0.8, mutation_rate=0.05, selector=RouletteSelector(), callbacks=[]):
+    def evolve(self, population_size, num_generations, crossover_rate=0.8, mutation_rate=0.05, elite_rate=0.05, selection_strategy=RouletteSelector(), callbacks=[]):
         """Evolves the organism
 
         Evolves the organism by creating a population of the organism, and evolving the population for the specified number of generations.
@@ -133,6 +133,8 @@ class Organism:
                 The probability that two organisms will crossover (default 0.8).
             mutation_rate (float, optional):
                 The probability that a trait will mutate (used independently for each trait) (default 0.05).
+            elite_rate (float, optional):
+                The percentage of the population that will be preserved as elites (default 0.05).
             selector (Selector, optional):
                 The selector to use to select parents and survivors (default RouletteSelector()).
             callbacks (list of Callback, optional):
@@ -150,10 +152,14 @@ class Organism:
             for callback in callbacks:
                 callback.on_generation_begin(population)
 
-            new_organisms = selector.get_survivors(population)
+            num_elites = int(population_size*elite_rate)
+            new_organisms = population.most_fit(num_elites)
             while len(new_organisms) < population_size:
-                parent = selector.select_parent(population)
-                child = parent + selector.select_parent(population) if random.random() < crossover_rate else parent
+                if random.random() < crossover_rate:
+                    parents = selection_strategy.select(population, 2)
+                    child = parents[0] + parents[1]
+                else:
+                    child = selection_strategy.select(population, 1)[0]
                 child.mutate(mutation_rate)
                 new_organisms.append(child)
             population = Population(new_organisms)
@@ -161,7 +167,7 @@ class Organism:
             for callback in callbacks:
                 callback.on_generation_end(population)
         
-        best = population.most_fit
+        best = population.most_fit()
         for name, trait in self._traits.items():
             self.__dict__[name] = best.__dict__.get(name)
 

@@ -8,7 +8,6 @@ class HistoryCallback(Callback):
         self.avg_fitness = []
 
     def on_generation_end(self, population):
-        fitnesses = [o.fitness for o in population.organisms]
-        self.min_fitness.append(min(fitnesses))
-        self.max_fitness.append(max(fitnesses))
-        self.avg_fitness.append(sum(fitnesses)/len(fitnesses))
+        self.min_fitness.append(population.min_fitness())
+        self.max_fitness.append(population.max_fitness())
+        self.avg_fitness.append(population.avg_fitness())
