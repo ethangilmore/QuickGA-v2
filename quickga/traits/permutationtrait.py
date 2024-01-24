@@ -18,37 +18,19 @@ class PermutationTrait(Trait):
                 j = random.randint(0, len(mutated_value)-1)
                 mutated_value[i], mutated_value[j] = mutated_value[j], mutated_value[i]
         return mutated_value
-        
-    
+
     def crossover(self, a, b):
-        # partially mapped crossover https://en.wikipedia.org/wiki/Crossover_(genetic_algorithm)#Partially_mapped_crossover_(PMX)
-        
-        # select two random indices
-        start_index, end_index = random.sample(range(len(a)), 2)
-        if start_index > end_index:
-            start_index, end_index = end_index, start_index
+        # Ordered Crossover
+        size = len(a)
+        p1, p2 = sorted(random.sample(range(size), 2))
 
-        # copy down segment from first parent
-        child = [None] * len(a)
-        child[start_index:end_index] = a[start_index:end_index]
+        # Copy the segment from first parent to offspring
+        offspring = [None] * size
+        offspring[p1:p2] = a[p1:p2]
 
-        # map values from second parent
-        for i, value in enumerate(b[start_index:end_index]):
-            if value in child[start_index:end_index]:
-                continue
-            mapped_index = self.map_index(i+start_index, b, a, start_index, end_index)
-            child[mapped_index] = value
+        # Fill the remaining positions from the second parent
+        b_filtered = [item for item in b if item not in offspring[p1:p2]]
+        offspring[:p1] = b_filtered[:p1]
+        offspring[p2:] = b_filtered[p1:]
 
-        # copy all other values from second parent
-        for i, value in enumerate(child):
-            if value is None:
-                child[i] = b[i]
-
-        return child
-
-    def map_index(self, index: int, a: list, b: list, region_start: int, region_end: int) -> int:
-        map_index = lambda index : a.index(b[index])
-        i = index
-        while region_start <= i and i < region_end:
-            i = map_index(i)
-        return i
+        return offspring

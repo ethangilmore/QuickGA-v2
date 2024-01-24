@@ -3,7 +3,7 @@ from functools import cached_property
 
 from .traits import Trait
 from .population import Population
-from .selectionstrategies import RouletteSelector
+from .selectionstrategies import TournamentSelection
 from .callbacks import HistoryCallback
 
 class Organism:
@@ -118,7 +118,7 @@ class Organism:
             mutated_value = trait.mutate(original_value, mutation_rate)
             self.__dict__[name] = mutated_value
     
-    def evolve(self, population_size, num_generations, crossover_rate=0.8, mutation_rate=0.05, elite_rate=0.05, selection_strategy=RouletteSelector(), callbacks=[]):
+    def evolve(self, population_size, num_generations, crossover_rate=1, mutation_rate=0.05, elite_rate=0.05, selection_strategy=TournamentSelection(5, .9), callbacks=[]):
         """Evolves the organism
 
         Evolves the organism by creating a population of the organism, and evolving the population for the specified number of generations.
@@ -155,11 +155,8 @@ class Organism:
             num_elites = int(population_size*elite_rate)
             new_organisms = population.most_fit(num_elites)
             while len(new_organisms) < population_size:
-                if random.random() < crossover_rate:
-                    parents = selection_strategy.select(population, 2)
-                    child = parents[0] + parents[1]
-                else:
-                    child = selection_strategy.select(population, 1)[0]
+                parent = selection_strategy.select(population)
+                child = parent + selection_strategy.select(population) if random.random() < crossover_rate else parent
                 child.mutate(mutation_rate)
                 new_organisms.append(child)
             population = Population(new_organisms)

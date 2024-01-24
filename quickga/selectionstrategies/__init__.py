@@ -1,2 +1,3 @@
 from .selectionstrategy import SelectionStrategy
-from .rouletteselector import RouletteSelector
+from .rouletteselector import RouletteSelection
+from .tournamentselection import TournamentSelection
